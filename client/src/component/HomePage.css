@@ -1,0 +1,56 @@
+.home-container {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+.home-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 50px;
+  text-align: center;
+}
+
+.home-left h1 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.buttons .btn {
+  margin: 10px;
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup {
+  background-color: #4caf50;
+  color: white;
+}
+
+.signup:hover {
+  background-color: #45a049;
+}
+
+.login {
+  background-color: #2196f3;
+  color: white;
+}
+
+.login:hover {
+  background-color: #1976d2;
+}
+
+.home-right {
+  flex: 1;
+  background-image: url("ev.png");
+  background-size: cover;
+  background-position: center;
+}
