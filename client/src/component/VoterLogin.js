@@ -17,7 +17,7 @@ export default function VoterLogin() {
       const response = await axios.post("http://localhost:5000/api/voters/login", form);
       if (response.data.success) {
         alert("Login Successful!");
-        history.push("/home"); // redirect to Home component
+        history.push("/voter"); // redirect to Home component
       } else {
         alert(response.data.message || "Invalid email or password.");
       }

@@ -1,4 +1,5 @@
 // server.js
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -10,14 +11,12 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// ✅ Connect to MongoDB
-mongoose
-  .connect("mongodb://127.0.0.1:27017/dVotingDB", {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => console.log("✅ Connected to MongoDB"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+// ✅ MongoDB Atlas connection
+const uri = "mongodb+srv://lakshmykaa05_db_user:lakshmy@cluster0.0o2rndb.mongodb.net/voting?retryWrites=true&w=majority&appName=Cluster0";
+
+mongoose.connect(uri)
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch(err => console.error("❌ Error connecting to MongoDB:", err));
 
 // ✅ Simple test route
 app.get("/", (req, res) => {
@@ -25,10 +24,10 @@ app.get("/", (req, res) => {
 });
 
 // ✅ Voter Signup & Login API (temporary demo)
-const voters = []; // this is just a temporary in-memory array
+const voters = []; // temporary in-memory array
 
 // --- Signup Route ---
-app.post("/api/voters/signup", (req, res) => {
+app.post("http://localhost:5000/api/voters/signup", (req, res) => {
   const { name, email, password } = req.body;
   const exists = voters.find((v) => v.email === email);
   if (exists) {
@@ -50,5 +49,5 @@ app.post("/api/voters/login", (req, res) => {
 });
 
 // ✅ Start the server
-const PORT = 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}))`;

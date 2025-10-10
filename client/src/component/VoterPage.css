@@ -1,0 +1,56 @@
+.voter-container {
+  font-family: "Poppins", sans-serif;
+  background: #f9f9f9;
+  min-height: 100vh;
+}
+
+.voter-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #004aad;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+}
+
+.nav-right a {
+  margin-right: 1.5rem;
+  color: white;
+  text-decoration: none;
+}
+
+.logout-btn {
+  background: #ff3b3b;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #e63232;
+}
+
+.candidates-section,
+.results-section {
+  margin: 2rem auto;
+  max-width: 600px;
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+  background: #eef2f8;
+  padding: 10px;
+  border-radius: 8px;
+}

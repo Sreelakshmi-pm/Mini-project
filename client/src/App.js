@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import HomePage from "./component/HomePage"; // Welcome page
 import VoterSignup from "./component/VoterSignup";
 import VoterLogin from "./component/VoterLogin";
+import VoterPage from "./component/VoterPage";
 import Home from "./component/Home";
 
 import Voting from "./component/Voting/Voting";
@@ -26,6 +27,7 @@ export default class App extends Component {
             <Route exact path="/" component={HomePage} />
             <Route exact path="/signup" component={VoterSignup} />
             <Route exact path="/login" component={VoterLogin} />
+            <Route exact path="/voter" component={VoterPage} />
             <Route exact path="/home" component={Home} />
             <Route exact path="/AddCandidate" component={AddCandidate} />
             <Route exact path="/Voting" component={Voting} />
