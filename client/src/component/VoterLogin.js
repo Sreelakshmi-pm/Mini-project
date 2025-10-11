@@ -1,44 +1,64 @@
+// VoterLogin.js
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom"; // v5 hook
 import axios from "axios";
-import "./VoterLogin.css";
+import { useHistory } from "react-router-dom"; // ✅ useHistory
 
-export default function VoterLogin() {
-  const history = useHistory();
-  const [form, setForm] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
+function VoterLogin() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const history = useHistory(); // initialize history
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setLoading(true);
+
     try {
-      const response = await axios.post("http://localhost:5000/api/voters/login", form);
-      if (response.data.success) {
-        alert("Login Successful!");
-        history.push("/voter"); // redirect to Home component
+      const res = await axios.post("http://localhost:5000/api/voters/login", {
+        email,
+        password,
+      });
+
+      if (res.data.success) {
+        alert(res.data.message);
+
+        // Redirect based on role
+        if (res.data.role === "admin") {
+          history.push("/admin"); // ✅ admin page
+        } else if (res.data.role === "voter") {
+          history.push("/voter"); // ✅ voter page
+        } else {
+          alert("Unknown role. Cannot redirect.");
+        }
       } else {
-        alert(response.data.message || "Invalid email or password.");
+        alert(res.data.message); // invalid credentials
       }
     } catch (error) {
-      console.error(error);
-      alert(error.response?.data?.message || "Login failed.");
-    } finally {
-      setLoading(false);
+      console.error("Login Error:", error);
+      alert("Login failed. Please try again.");
     }
   };
 
   return (
     <div className="login-container">
-      <div className="login-box">
-        <h2>Login</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="email" name="email" placeholder="Email" value={form.email} onChange={handleChange} required />
-          <input type="password" name="password" placeholder="Password" value={form.password} onChange={handleChange} required />
-          <button type="submit" disabled={loading}>{loading ? "Logging in..." : "Login"}</button>
-        </form>
-      </div>
+      <h2>Voter Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
     </div>
   );
 }
+
+export default VoterLogin;
