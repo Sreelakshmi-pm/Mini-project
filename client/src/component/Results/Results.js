@@ -6,6 +6,8 @@ import { Link } from "react-router-dom";
 import Navbar from "../Navbar/Navigation";
 import NavbarAdmin from "../Navbar/NavigationAdmin";
 import NotInit from "../NotInit";
+import "../StatusMessage.css";
+import NavbarResults from "../Navbar/NavbarResults"; // <-- ADD THIS LINE
 
 // Contract
 import getWeb3 from "../../getWeb3";
@@ -94,11 +96,19 @@ export default class Result extends Component {
     }
   };
 
+  // client/src/component/Results/Results.js
+
+  // Replace the entire render() method with this one
   render() {
     if (!this.state.web3) {
       return (
         <>
-          {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
+          {/*
+          Show the correct navbar based on the user's role.
+          Admin gets the full admin navbar.
+          A regular voter gets the new, restricted results navbar.
+        */}
+          {this.state.isAdmin ? <NavbarAdmin /> : <NavbarResults />}
           <center>Loading Web3, accounts, and contract...</center>
         </>
       );
@@ -106,20 +116,22 @@ export default class Result extends Component {
 
     return (
       <>
-        {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
+        {/* The same logic applies here */}
+        {this.state.isAdmin ? <NavbarAdmin /> : <NavbarResults />}
         <br />
         <div>
           {!this.state.isElStarted && !this.state.isElEnded ? (
             <NotInit />
           ) : this.state.isElStarted && !this.state.isElEnded ? (
-            <div className="container-item attention">
+            <div className="status-message-container">
               <center>
-                <h3>The election is being conducted at the movement.</h3>
-                <p>Result will be displayed once the election has ended.</p>
-                <p>Go ahead and cast your vote {"(if not already)"}.</p>
+                Ongoing Election
+                <h3>The election is being conducted at the moment.</h3>
+                <p>Results will be displayed once the election has ended.</p>
+                <p>Go ahead and cast your vote (if not already).</p>
                 <br />
                 <Link
-                  to="/Voting"
+                  to="/voter"
                   style={{ color: "black", textDecoration: "underline" }}
                 >
                   Voting Page

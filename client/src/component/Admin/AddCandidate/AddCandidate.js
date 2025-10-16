@@ -1,16 +1,14 @@
+// client/src/component/Admin/AddCandidate/AddCandidate.js
+
 import React, { Component } from "react";
-
-import Navbar from "../../Navbar/Navigation";
 import NavbarAdmin from "../../Navbar/NavigationAdmin";
-
 import getWeb3 from "../../../getWeb3";
 import Election from "../../../contracts/Election.json";
-
 import AdminOnly from "../../AdminOnly";
-
-import "./AddCandidate.css";
+import "../AdminPages.css"; // <-- IMPORT THE NEW CSS
 
 export default class AddCandidate extends Component {
+  // ... (constructor and componentDidMount remain the same)
   constructor(props) {
     super(props);
     this.state = {
@@ -100,11 +98,12 @@ export default class AddCandidate extends Component {
     window.location.reload();
   };
 
+ 
   render() {
     if (!this.state.web3) {
       return (
         <>
-          {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
+          <NavbarAdmin />
           <center>Loading Web3, accounts, and contract...</center>
         </>
       );
@@ -112,7 +111,7 @@ export default class AddCandidate extends Component {
     if (!this.state.isAdmin) {
       return (
         <>
-          <Navbar />
+          <NavbarAdmin />
           <AdminOnly page="Add Candidate Page." />
         </>
       );
@@ -120,43 +119,40 @@ export default class AddCandidate extends Component {
     return (
       <>
         <NavbarAdmin />
-        <div className="container-main">
-          <h2>Add a new candidate</h2>
-          <small>Total candidates: {this.state.candidateCount}</small>
-          <div className="container-item">
-            <form className="form">
-              <label className={"label-ac"}>
-                Header
-                <input
-                  className={"input-ac"}
-                  type="text"
-                  placeholder="eg. Marcus"
-                  value={this.state.header}
-                  onChange={this.updateHeader}
-                />
-              </label>
-              <label className={"label-ac"}>
-                Slogan
-                <input
-                  className={"input-ac"}
-                  type="text"
-                  placeholder="eg. It is what it is"
-                  value={this.state.slogan}
-                  onChange={this.updateSlogan}
-                />
-              </label>
-              <button
-                className="btn-add"
-                disabled={
-                  this.state.header.length < 3 || this.state.header.length > 21
-                }
-                onClick={this.addCandidate}
-              >
-                Add
-              </button>
-            </form>
+        <div className="admin-page-container">
+          <h2>Add a New Candidate</h2>
+          <div className="add-candidate-form">
+            <div>
+              <label className="form-label">Name / Header</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="eg. Candidate Name"
+                value={this.state.header}
+                onChange={this.updateHeader}
+              />
+            </div>
+            <div>
+              <label className="form-label">Slogan</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder="eg. A catchy slogan"
+                value={this.state.slogan}
+                onChange={this.updateSlogan}
+              />
+            </div>
+            <button
+              className="btn-primary"
+              style={{ marginTop: "1rem" }}
+              disabled={this.state.header.length < 3 || this.state.header.length > 32}
+              onClick={this.addCandidate}
+            >
+              Add
+            </button>
           </div>
         </div>
+        {/* The list of added candidates can be styled further if needed */}
         {loadAdded(this.state.candidates)}
       </>
     );

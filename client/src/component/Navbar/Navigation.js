@@ -1,32 +1,25 @@
+// client/src/component/Navbar/Navigation.js
+
 import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-
 import "./Navbar.css";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   return (
     <nav>
-      <NavLink to="/" className="header">
+      <NavLink to="/home" className="header">
         <i className="fab fa-hive"></i> Home
       </NavLink>
-      <ul
-        className="navbar-links"
-        style={{ width: "35%", transform: open ? "translateX(0px)" : "" }}
-      >
+      <ul className={open ? "navbar-links open" : "navbar-links"}>
         <li>
-          <NavLink to="/Registration" activeClassName="nav-active">
-            <i className="far fa-registered" /> Registration
+          <NavLink to="/voter" activeClassName="nav-active" onClick={() => setOpen(false)}>
+            <i className="fas fa-vote-yea" /> Election Portal
           </NavLink>
         </li>
         <li>
-          <NavLink to="/Voting" activeClassName="nav-active">
-            <i className="fas fa-vote-yea" /> Voting
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/Results" activeClassName="nav-active">
-            <i className="fas fa-poll-h" /> Results
+          <NavLink to="/results" activeClassName="nav-active" onClick={() => setOpen(false)}>
+            <i className="fas fa-poll-h" /> Full Results
           </NavLink>
         </li>
       </ul>

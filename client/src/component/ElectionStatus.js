@@ -1,31 +1,16 @@
+// client/src/component/ElectionStatus.js
+
 import React from "react";
+import "./DashboardControls.css"; // <-- IMPORT THE NEW CSS
 
 const ElectionStatus = (props) => {
-  const electionStatus = {
-    padding: "11px",
-    margin: "7px",
-    width: "100%",
-    border: "1px solid tomato",
-    marginLeft: "auto",
-    marginRight: "auto",
-    textAlign: "center",
-    borderRadius: "0.5em",
-    overflow: "auto",
-    alignItems: "center",
-    justifyContent: "space-around",
-    display: "flex",
-  };
   return (
-    <div
-      className="container-main"
-      style={{ borderTop: "1px solid", marginTop: "0px" }}
-    >
+    <div className="status-panel">
       <h3>Election Status</h3>
-      <div style={electionStatus}>
-        <p>Started: {props.elStarted ? "True" : "False"}</p>
-        <p>Ended: {props.elEnded ? "True" : "False"}</p>
+      <div className="status-display">
+        <p>Started: <strong>{props.elStarted ? "Yes" : "No"}</strong></p>
+        <p>Ended: <strong>{props.elEnded ? "Yes" : "No"}</strong></p>
       </div>
-      <div className="container-item" />
     </div>
   );
 };

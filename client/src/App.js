@@ -6,7 +6,7 @@ import VoterSignup from "./component/VoterSignup";
 import VoterLogin from "./component/VoterLogin";
 import VoterPage from "./component/VoterPage";
 import Home from "./component/Home";
-
+import AdminDashboard from "./component/AdminDashboard"; 
 import Voting from "./component/Voting/Voting";
 import Results from "./component/Results/Results";
 import Registration from "./component/Registration/Registration";
@@ -29,8 +29,9 @@ export default class App extends Component {
             <Route exact path="/login" component={VoterLogin} />
             <Route exact path="/voter" component={VoterPage} />
             <Route exact path="/home" component={Home} />
-            <Route exact path="/AddCandidate" component={AddCandidate} />
+            <Route exact path="/admin" component={AddCandidate} />
             <Route exact path="/Voting" component={Voting} />
+             <Route exact path="/admindashboard" component={AdminDashboard} />
             <Route exact path="/Results" component={Results} />
             <Route exact path="/Registration" component={Registration} />
             <Route exact path="/Verification" component={Verification} />

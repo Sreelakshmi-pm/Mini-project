@@ -1,0 +1,68 @@
+/* client/src/component/Admin/AdminPages.css */
+
+/* Main container for all admin pages */
+.admin-page-container {
+  /* This uses the .container-main styles from App.css */
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--background-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.admin-page-container h2, .admin-page-container h3 {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* --- Add Candidate Form Styles --- */
+.add-candidate-form {
+  max-width: 500px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* --- Verification Table Styles --- */
+.verification-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2rem;
+}
+
+.verification-table th, .verification-table td {
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.verification-table th {
+  background-color: var(--background-light-grey);
+  font-weight: 700;
+}
+
+/* Word-break for long wallet addresses */
+.verification-table .address-cell {
+  word-break: break-all;
+}
+
+/* --- Start/End Election Page Styles --- */
+.start-end-container {
+  text-align: center;
+}
+
+.election-status-panel {
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--background-light-grey);
+}

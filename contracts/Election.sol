@@ -81,8 +81,17 @@ contract Election {
             _electionTitle,
             _organizationTitle
         );
-        start = true;
+        // start = true;
         end = false;
+    }
+
+    // ADD THIS NEW FUNCTION
+    // Start election
+    function startElection() 
+    public onlyAdmin 
+    {
+    require(end == false, "Election has ended");
+    start = true;
     }
 
     // Get Elections details

@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/arlbibek/dVoting/issues"
   },
-  "homepage": "https://github.com/arlbibek/dVoting#readme"
+  "homepage": "https://github.com/arlbibek/dVoting#readme",
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "react-app-rewired": "^2.2.1"
+  }
 }

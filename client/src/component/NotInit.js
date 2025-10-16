@@ -1,15 +1,16 @@
-// Node module
+// client/src/component/NotInit.js
+
 import React from "react";
+import "./StatusMessage.css"; // <-- IMPORT THE NEW CSS
 
 const NotInit = () => {
-  // Component: Displaying election not initialize message.
   return (
-    <div className="container-item info">
-      <center>
-        <h3>The election has not been initialize.</h3>
-        <p>Please Wait..</p>
-      </center>
+    // Replace the old structure with this single, styled container
+    <div className="status-message-container">
+      <h3>The election has not been initialized.</h3>
+      <p>Please wait for the admin to set up the election.</p>
     </div>
   );
 };
+
 export default NotInit;

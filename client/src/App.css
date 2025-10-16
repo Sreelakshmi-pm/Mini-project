@@ -1,109 +1,126 @@
+/* client/src/App.css */
+
+/* 1. IMPORT A CLEAN, MODERN FONT (ROBOTO) */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+/* 2. DEFINE THE COLOR THEME AND GLOBAL VARIABLES */
+:root {
+  /* Primary Colors based on your choice */
+  --primary-orange: #FF9933; /* Saffron Orange for buttons */
+  --header-green: #138808;   /* India Green for headers */
+  --background-white: #FFFFFF;
+  
+  /* Accent and Text Colors I've chosen for a clean look */
+  --primary-orange-dark: #e68a2e; /* For button hover */
+  --accent-blue: #000080;         /* Navy Blue from the Ashoka Chakra */
+  --text-color-dark: #2c3e50;     /* A softer black for text */
+  --text-color-light: #ffffff;    /* White text for dark backgrounds */
+  --border-color: #e0e0e0;        /* Light grey for borders */
+  --background-light-grey: #f7f9fa; /* Very light grey for main page background */
+
+  /* Sizing and Style Variables */
+  --font-family: 'Roboto', sans-serif;
+  --border-radius: 8px;
+  --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* 3. APPLY GLOBAL STYLES TO BASE ELEMENTS */
 * {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-h1 {
-  text-align: center;
 }
 
-code {
-  font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
-  background-color: #f1f1f1;
-  padding: 2px;
-  font-size: 105%;
-  border-radius: 6px;
-  border: 1px solid;
+body {
+  font-family: var(--font-family);
+  background-color: var(--background-light-grey);
+  color: var(--text-color-dark);
+  line-height: 1.6;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  color: var(--header-green);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+a {
+  color: var(--primary-orange);
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+a:hover {
+  text-decoration: underline;
+  color: var(--primary-orange-dark);
+}
+
+/* 4. CREATE UNIFORM STYLES FOR REUSABLE COMPONENTS */
+
+/* Main Page Container (used on almost every page) */
 .container-main {
-  background-color: none;
-  padding: 1%;
-  margin: 11px;
-  margin-left: auto;
-  margin-right: auto;
-  width: max-content;
-  overflow: auto;
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--background-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
-.container-item {
-  transition: ease all 0.5s;
-  background-color: #f2f2f2;
-  border-radius: 7px;
-  width: 977px;
-  padding: 17px;
-  margin: 17px auto;
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  overflow: auto;
+/* Uniform Button Style */
+.btn-primary {
+  display: inline-block;
+  background-color: var(--primary-orange);
+  color: var(--text-color-light);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.title {
-  text-transform: capitalize;
+.btn-primary:hover {
+  background-color: var(--primary-orange-dark);
+  transform: translateY(-2px); /* Slight lift on hover */
 }
 
-.container-list {
+.btn-primary:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Uniform Form Input Style */
+.form-input {
   width: 100%;
-  padding: 11px;
-  margin: 3px auto;
-  align-items: center;
-  justify-content: center;
-  display: block;
-  overflow: auto;
-}
-.center-items {
-  display: grid;
-  place-items: center;
+  padding: 12px;
+  margin-bottom: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-family: var(--font-family);
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-@media all and (max-width: 1020px) {
-  .container-item {
-    width: 777px;
-  }
-}
-@media all and (max-width: 900px) {
-  .container-item {
-    width: 800px;
-    display: block;
-  }
-}
-@media all and (max-width: 850px) {
-  .container-item {
-    width: 700px;
-  }
-}
-@media all and (max-width: 750px) {
-  .container-item {
-    width: 600px;
-  }
-}
-@media all and (max-width: 650px) {
-  .container-item {
-    width: 400px;
-  }
-}
-@media all and (max-width: 400px) {
-  .container-item {
-    width: 300px;
-  }
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  box-shadow: 0 0 0 3px rgba(255, 153, 51, 0.2); /* Orange glow on focus */
 }
 
-.info,
-.attention,
-.alert,
-.success {
-  border: 1px solid black;
-  margin-top: 11px;
-  margin-bottom: 11px px;
+/* Uniform Card Style (for candidates, voters, etc.) */
+.info-card {
+  background: var(--background-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--box-shadow);
 }
-.info {
-  background-color: #ddffff;
-}
-.attention {
-  background-color: #fffbdd;
-}
-.success {
-  background-color: #ddffdd;
+
+.info-card h3 {
+  margin-top: 0;
 }

@@ -1,7 +1,9 @@
+/* client/src/component/HomePage.css */
+
 .home-container {
   display: flex;
-  height: 100vh;
-  font-family: Arial, sans-serif;
+  height: 100vh; /* Full screen height */
+  width: 100%;
 }
 
 .home-left {
@@ -10,42 +12,57 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 50px;
+  padding: 3rem;
   text-align: center;
+  background-color: var(--background-white);
 }
 
 .home-left h1 {
-  font-size: 2.5rem;
-  margin-bottom: 40px;
+  /* Use the theme's header color and font */
+  color: var(--header-green); 
+  font-family: var(--font-family);
+  font-size: 3rem; /* Larger for more impact */
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  line-height: 1.3;
+  max-width: 600px;
 }
 
-.buttons .btn {
-  margin: 10px;
-  padding: 15px 40px;
-  font-size: 1.2rem;
+.home-left p {
+  font-size: 1.1rem;
+  margin-bottom: 2.5rem;
+  color: var(--text-color-dark);
+  max-width: 500px;
+}
+
+.buttons-container {
+  display: flex;
+  gap: 1rem; /* Creates space between the buttons */
+}
+
+/*
+  NOTE: We don't need .signup or .login styles anymore.
+  We will use the global .btn-primary class from App.css.
+  For variety, I've created a .btn-secondary for the login button.
+*/
+.btn-secondary {
+  /* Inherit from the primary button style in App.css */
+  display: inline-block;
+  background-color: var(--accent-blue); /* Use the accent blue */
+  color: var(--text-color-light);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 12px 24px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--border-radius);
   cursor: pointer;
-  transition: 0.3s;
+  text-align: center;
+  transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
 }
 
-.signup {
-  background-color: #4caf50;
-  color: white;
-}
-
-.signup:hover {
-  background-color: #45a049;
-}
-
-.login {
-  background-color: #2196f3;
-  color: white;
-}
-
-.login:hover {
-  background-color: #1976d2;
+.btn-secondary:hover {
+  background-color: #000066; /* A darker blue for hover */
+  transform: translateY(-2px);
 }
 
 .home-right {
@@ -53,4 +70,21 @@
   background-image: url("ev.png");
   background-size: cover;
   background-position: center;
+}
+
+/* Responsive styles for mobile devices */
+@media (max-width: 768px) {
+  /* Stack the layout vertically on small screens */
+  .home-container {
+    flex-direction: column;
+  }
+
+  /* The image takes up too much space on mobile, so we hide it */
+  .home-right {
+    display: none;
+  }
+
+  .home-left h1 {
+    font-size: 2.2rem;
+  }
 }

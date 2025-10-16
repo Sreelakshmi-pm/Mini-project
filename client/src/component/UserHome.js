@@ -1,27 +1,36 @@
+// client/src/component/UserHome.js
+
 import React from "react";
+import "./UserHome.css"; // We'll create this CSS file next
 
 function UserHome(props) {
+  // Destructure the properties from the 'el' prop for cleaner access
+  const {
+    electionTitle,
+    organizationTitle,
+    adminName,
+    adminTitle,
+    adminEmail,
+  } = props.el;
+
   return (
-    <div>
-      <div className="container-main">
-        <div className="container-list title">
-          <h1>{props.el.electionTitle}</h1>
-          <br />
-          <center>{props.el.organizationTitle}</center>
-          <table style={{ marginTop: "21px" }}>
-            <tr>
-              <th>admin</th>
-              <td>
-                {props.el.adminName} ({props.el.adminTitle})
-              </td>
-            </tr>
-            <tr>
-              <th>contact</th>
-              <td style={{ textTransform: "none" }}>{props.el.adminEmail}</td>
-            </tr>
-          </table>
-        </div>
+    <div className="user-home-container info-card">
+      <div className="title-section">
+        <h1>{electionTitle}</h1>
+        <h3>{organizationTitle}</h3>
       </div>
+      <table className="details-table">
+        <tbody>
+          <tr>
+            <th>Admin</th>
+            <td>{adminName} ({adminTitle})</td>
+          </tr>
+          <tr>
+            <th>Contact</th>
+            <td>{adminEmail}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   );
 }

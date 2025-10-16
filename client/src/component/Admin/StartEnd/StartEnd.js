@@ -1,16 +1,11 @@
 import React, { Component } from "react";
-
-import Navbar from "../../Navbar/Navigation";
 import NavbarAdmin from "../../Navbar/NavigationAdmin";
-
 import AdminOnly from "../../AdminOnly";
-
 import getWeb3 from "../../../getWeb3";
 import Election from "../../../contracts/Election.json";
-
-import "./StartEnd.css";
-
+import "../AdminPages.css"; //
 export default class StartEnd extends Component {
+  // ... (constructor, componentDidMount, start/end functions remain the same)
   constructor(props) {
     super(props);
     this.state = {
@@ -89,7 +84,7 @@ export default class StartEnd extends Component {
     if (!this.state.web3) {
       return (
         <>
-          {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
+          <NavbarAdmin />
           <center>Loading Web3, accounts, and contract...</center>
         </>
       );
@@ -97,7 +92,7 @@ export default class StartEnd extends Component {
     if (!this.state.isAdmin) {
       return (
         <>
-          <Navbar />
+          <NavbarAdmin />
           <AdminOnly page="Start and end election page." />
         </>
       );
@@ -105,45 +100,40 @@ export default class StartEnd extends Component {
     return (
       <>
         <NavbarAdmin />
-        {!this.state.elStarted & !this.state.elEnded ? (
-          <div className="container-item info">
-            <center>The election have never been initiated.</center>
-          </div>
-        ) : null}
-        <div className="container-main">
-          <h3>Start or end election</h3>
-          {!this.state.elStarted ? (
-            <>
-              <div className="container-item">
-                <button onClick={this.startElection} className="start-btn">
-                  Start {this.state.elEnded ? "Again" : null}
-                </button>
-              </div>
-              {this.state.elEnded ? (
-                <div className="container-item">
-                  <center>
-                    <p>The election ended.</p>
-                  </center>
-                </div>
-              ) : null}
-            </>
+        <div className="admin-page-container start-end-container">
+          <h2>Election Control Panel</h2>
+
+          {!this.state.elStarted && !this.state.elEnded ? (
+            <button
+              onClick={this.startElection}
+              className="btn-primary"
+              style={{ padding: "15px 30px", fontSize: "1.2rem" }}
+            >
+              Start Election
+            </button>
+          ) : this.state.elStarted && !this.state.elEnded ? (
+            <button
+              onClick={this.endElection}
+              className="btn-primary"
+              style={{
+                backgroundColor: "tomato",
+                padding: "15px 30px",
+                fontSize: "1.2rem",
+              }}
+            >
+              End Election
+            </button>
           ) : (
-            <>
-              <div className="container-item">
-                <center>
-                  <p>The election started.</p>
-                </center>
-              </div>
-              <div className="container-item">
-                <button onClick={this.endElection} className="start-btn">
-                  End
-                </button>
-              </div>
-            </>
+            <p>
+              The election has ended. To start a new one, you must redeploy the
+              contract.
+            </p>
           )}
-          <div className="election-status">
-            <p>Started: {this.state.elStarted ? "True" : "False"}</p>
-            <p>Ended: {this.state.elEnded ? "True" : "False"}</p>
+
+          <div className="election-status-panel">
+            <h3>Current Status</h3>
+            <p>Started: {this.state.elStarted ? "Yes" : "No"}</p>
+            <p>Ended: {this.state.elEnded ? "Yes" : "No"}</p>
           </div>
         </div>
       </>

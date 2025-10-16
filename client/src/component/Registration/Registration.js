@@ -138,6 +138,9 @@ export default class Registration extends Component {
       .send({ from: this.state.account, gas: 1000000 });
     window.location.reload();
   };
+  // client/src/component/Registration/Registration.js
+
+  // Replace the entire render() method with this new version
   render() {
     if (!this.state.web3) {
       return (
@@ -147,9 +150,35 @@ export default class Registration extends Component {
         </>
       );
     }
+
+    // --- ADMIN VIEW ---
+    // If the user is an admin, show a clean list of all voters.
+    if (this.state.isAdmin) {
+      return (
+        <>
+          <NavbarAdmin />
+          <div className="container-main">
+            <h3>Registered Voters</h3>
+            <small>Total Voters: {this.state.voters.length}</small>
+            {this.state.voters.length < 1 ? (
+              <div className="container-item info">
+                None has registered yet.
+              </div>
+            ) : (
+              // This 'loadAllVoters' function already exists in your file
+              // and correctly displays the list of all voters.
+              loadAllVoters(this.state.voters)
+            )}
+          </div>
+        </>
+      );
+    }
+
+    // --- VOTER VIEW ---
+    // If the user is a voter, show the original page with the form.
     return (
       <>
-        {this.state.isAdmin ? <NavbarAdmin /> : <Navbar />}
+        <Navbar />
         {!this.state.isElStarted && !this.state.isElEnded ? (
           <NotInit />
         ) : (
@@ -170,6 +199,7 @@ export default class Registration extends Component {
                         type="text"
                         value={this.state.account}
                         style={{ width: "400px" }}
+                        readOnly
                       />{" "}
                     </label>
                   </div>
@@ -200,9 +230,7 @@ export default class Registration extends Component {
                   <p className="note">
                     <span style={{ color: "tomato" }}> Note: </span>
                     <br /> Make sure your account address and Phone number are
-                    correct. <br /> Admin might not approve your account if the
-                    provided Phone number nub does not matches the account
-                    address registered in admins catalogue.
+                    correct.
                   </p>
                   <button
                     className="btn-add"
@@ -232,15 +260,6 @@ export default class Registration extends Component {
                 this.state.currentVoter.isRegistered
               )}
             </div>
-            {this.state.isAdmin ? (
-              <div
-                className="container-main"
-                style={{ borderTop: "1px solid" }}
-              >
-                <small>TotalVoters: {this.state.voters.length}</small>
-                {loadAllVoters(this.state.voters)}
-              </div>
-            ) : null}
           </>
         )}
       </>

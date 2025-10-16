@@ -1,72 +1,167 @@
-* {
-  font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-li {
-  list-style-type: none;
-}
-a {
-  text-decoration: none;
-  color: white;
-}
+/* client/src/component/Navbar/Navbar.css */
+
+/* --- Main Navigation Bar Container --- */
 nav {
   display: flex;
-  height: 11vh;
-  background: tomato;
-  justify-content: space-around;
+  justify-content: space-between;
+  align-items: center;
+  height: 70px;
+  padding: 0 2rem;
+  background: rgba(17, 31, 180, 0.936); /* Using the theme's navy blue */
+  color: var(--text-color-light);
   position: sticky;
   top: 0;
-  align-items: center;
-}
-nav .header {
-  font-size: 24px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-nav .header:hover {
-  cursor: pointer;
-}
-nav .navbar-links {
-  display: flex;
-  justify-content: space-around;
-  width: 70%;
-  cursor: pointer;
-}
-nav .navbar-links a {
-  font-size: 17px;
-  font-weight: normal;
-  cursor: pointer;
-  text-transform: capitalize;
-}
-nav .navbar-links a:hover {
-  cursor: pointer;
-  color: black;
-}
-nav .burger-menu {
-  font-size: 24px;
-  color: white;
-  cursor: pointer;
-  display: none;
-}
-.nav-active {
-  color: black;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family);
 }
 
-@media all and (max-width: 777px) {
+/* --- Header/Logo Styling --- */
+nav .header {
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-color-light);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+nav .header a {
+  color: var(--text-color-light); /* Ensure link inside is white */
+}
+
+/* --- Desktop Navigation Links --- */
+nav .navbar-links {
+  display: flex;
+  align-items: center;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  gap: 2rem;
+}
+
+nav .navbar-links a {
+  color: var(--text-color-light);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  position: relative; /* For the underline effect */
+  transition: color 0.2s ease-in-out;
+}
+
+/* Modern underline effect on hover */
+nav .navbar-links a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-orange);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+nav .navbar-links a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Style for the currently active page link */
+.nav-active {
+  color: var(--primary-orange) !important;
+  font-weight: 700;
+}
+
+/* --- Burger Menu Icon for Mobile --- */
+nav .burger-menu {
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: none; /* Hidden on desktop */
+}
+
+/* --- Responsive Design for Mobile --- */
+@media (max-width: 992px) {
   nav .burger-menu {
-    display: block;
+    display: block; /* Show the burger icon */
   }
+
   nav .navbar-links {
-    background-color: tomato;
-    display: block;
-    width: 50%;
-    position: absolute;
-    top: 100%;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0;
+    gap: 0;
+
+    /* Mobile Menu Drawer styles */
+    position: fixed;
+    top: 70px;
     left: 0;
-    padding: 0px;
-    transform: translate(-700px);
+    width: 80%;
+    max-width: 300px;
+    height: calc(100vh - 70px);
+    background: var(--accent-blue);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+
+    /* Hide/show transition */
+    transform: translateX(-100%);
+    transition: transform 0.3s ease-in-out;
   }
+
+  /* Style for when the menu is open (this class is toggled by JS) */
+  nav .navbar-links.open {
+    transform: translateX(0);
+  }
+
   nav .navbar-links li {
-    padding: 25px;
-    border-top: 3px solid white;
+    width: 100%;
+    text-align: center;
+  }
+
+  nav .navbar-links a {
+    display: block;
+    width: 100%;
+    padding: 1.5rem 0;
+    font-size: 1.2rem;
+  }
+
+  nav .navbar-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+
+  /* Remove the desktop underline effect on mobile */
+  nav .navbar-links a::after {
+    display: none;
+  }
+}
+/* client/src/component/Navbar/Navbar.css */
+
+/* --- Add these styles at the end of the file --- */
+
+/* Style for the logout button in the navbar */
+.logout-btn-nav {
+  background: none;
+  border: 2px solid var(--primary-orange);
+  color: var(--primary-orange);
+  font-family: var(--font-family);
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.logout-btn-nav:hover {
+  background: var(--primary-orange);
+  color: var(--text-color-light);
+}
+
+/* On mobile, the button should be easier to tap */
+@media (max-width: 992px) {
+  .logout-btn-nav {
+    width: 80%;
+    padding: 1rem;
+    margin-top: 1rem;
   }
 }

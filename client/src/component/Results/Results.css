@@ -53,6 +53,7 @@ tr:nth-child(even) {
   text-align: left;
   color: darkgray;
 }
+
 .vote-count {
   margin-top: 11px;
   padding: 3px;
