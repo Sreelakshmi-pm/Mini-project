@@ -1,0 +1,40 @@
+/* client/src/component/UserHome.css */
+
+.user-home-container {
+  text-align: center;
+}
+
+.title-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.title-section h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.title-section h3 {
+  font-size: 1.5rem;
+  color: var(--text-color-dark);
+  font-weight: 400;
+}
+
+.details-table {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: left;
+  border-collapse: collapse;
+}
+
+.details-table th, .details-table td {
+  padding: 12px;
+}
+
+.details-table th {
+  width: 30%;
+  font-weight: 700;
+  color: var(--header-green);
+}

@@ -1,18 +1,18 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
-import HomePage from "./component/HomePage"; // Welcome page
-import VoterSignup from "./component/VoterSignup";
-import VoterLogin from "./component/VoterLogin";
-import VoterPage from "./component/VoterPage";
-import Home from "./component/Home";
-import AdminDashboard from "./component/AdminDashboard"; 
+import HomePage from "./component/Home/HomePage"; // Welcome page
+import VoterSignup from "./component/Auth/VoterSignup";
+import VoterLogin from "./component/Auth/VoterLogin";
+import VoterPage from "./component/Voter/VoterPage";
+import Home from "./component/Home/Home";
+import AdminDashboard from "./component/Admin/AdminDashboard";
 import Voting from "./component/Voting/Voting";
 import Results from "./component/Results/Results";
 import Registration from "./component/Registration/Registration";
 import AddCandidate from "./component/Admin/AddCandidate/AddCandidate";
 import Verification from "./component/Admin/Verification/Verification";
-import test from "./component/test";
+import test from "./component/Shared/test";
 
 import Footer from "./component/Footer/Footer";
 
@@ -31,7 +31,7 @@ export default class App extends Component {
             <Route exact path="/home" component={Home} />
             <Route exact path="/admin" component={AddCandidate} />
             <Route exact path="/Voting" component={Voting} />
-             <Route exact path="/admindashboard" component={AdminDashboard} />
+            <Route exact path="/admindashboard" component={AdminDashboard} />
             <Route exact path="/Results" component={Results} />
             <Route exact path="/Registration" component={Registration} />
             <Route exact path="/Verification" component={Verification} />
@@ -55,7 +55,10 @@ class NotFound extends Component {
             The page you are looking for doesn't exist.
             <br />
             Go to{" "}
-            <Link to="/" style={{ color: "black", textDecoration: "underline" }}>
+            <Link
+              to="/"
+              style={{ color: "black", textDecoration: "underline" }}
+            >
               Home
             </Link>
           </p>

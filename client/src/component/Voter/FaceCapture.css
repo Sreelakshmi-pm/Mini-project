@@ -1,0 +1,217 @@
+/* client/src/component/Voter/FaceCapture.css */
+
+/* ── Overlay / backdrop ─────────────────────────────── */
+.fc-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+  animation: fc-fade-in 0.25s ease;
+}
+
+@keyframes fc-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Modal card ─────────────────────────────────────── */
+.fc-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem 2.5rem 2rem;
+  max-width: 520px;
+  width: 95%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  animation: fc-slide-up 0.3s ease;
+}
+
+@keyframes fc-slide-up {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.fc-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #111f82;
+  margin: 0;
+}
+
+.fc-subtitle {
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Camera video box ───────────────────────────────── */
+.fc-video-wrapper {
+  width: 100%;
+  max-width: 420px;
+  aspect-ratio: 4/3;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 3px solid #ddd;
+  background: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: border-color 0.3s;
+}
+
+.fc-video-wrapper.flash {
+  border-color: #fff;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.fc-video-wrapper.verified {
+  border-color: #27ae60;
+  box-shadow: 0 0 0 6px rgba(39, 174, 96, 0.35);
+}
+
+.fc-video-wrapper.failed {
+  border-color: #e74c3c;
+  box-shadow: 0 0 0 6px rgba(231, 76, 60, 0.35);
+}
+
+.fc-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1); /* mirror */
+}
+
+.fc-big-tick,
+.fc-big-cross {
+  font-size: 6rem;
+  font-weight: bold;
+  animation: fc-pop 0.4s ease;
+}
+
+.fc-big-tick {
+  color: #27ae60;
+}
+.fc-big-cross {
+  color: #e74c3c;
+}
+
+@keyframes fc-pop {
+  from {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Status text ────────────────────────────────────── */
+.fc-status {
+  font-size: 0.9rem;
+  color: #444;
+  text-align: center;
+  min-height: 1.2em;
+}
+.fc-status.success {
+  color: #27ae60;
+  font-weight: 600;
+}
+.fc-status.error {
+  color: #e74c3c;
+  font-weight: 600;
+}
+.fc-status.warning {
+  color: #e67e22;
+  font-weight: 600;
+}
+
+/* ── Photo-capture strip (dots) ─────────────────────── */
+.fc-strip {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.fc-dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #999;
+  transition: all 0.25s ease;
+}
+
+.fc-dot.filled {
+  background: #27ae60;
+  border-color: #27ae60;
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ── Capture button ─────────────────────────────────── */
+.fc-btn {
+  padding: 0.75rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #111f82, #3a5af9);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition:
+    opacity 0.2s,
+    transform 0.15s;
+  box-shadow: 0 4px 16px rgba(58, 90, 249, 0.4);
+}
+
+.fc-btn:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.fc-btn:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Spinning verification indicator ───────────────── */
+.fc-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #e0e0e0;
+  border-top-color: #111f82;
+  border-radius: 50%;
+  animation: fc-spin 0.9s linear infinite;
+}
+
+@keyframes fc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

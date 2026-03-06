@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 // Components
 import Navbar from "../Navbar/Navigation";
 import NavbarAdmin from "../Navbar/NavigationAdmin";
-import NotInit from "../NotInit";
+import NotInit from "../Shared/NotInit";
 
 // Contract
 import getWeb3 from "../../getWeb3";
@@ -54,7 +54,7 @@ export default class Voting extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
@@ -113,7 +113,7 @@ export default class Voting extends Component {
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
+        `Failed to load web3, accounts, or contract. Check console for details.`,
       );
       console.error(error);
     }
@@ -128,7 +128,7 @@ export default class Voting extends Component {
     };
     const confirmVote = (id, header) => {
       var r = window.confirm(
-        "Vote for " + header + " with Id " + id + ".\nAre you sure?"
+        "Vote for " + header + " with Id " + id + ".\nAre you sure?",
       );
       if (r === true) {
         castVote(id);

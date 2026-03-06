@@ -4,7 +4,7 @@ import React, { Component } from "react";
 import NavbarAdmin from "../../Navbar/NavigationAdmin";
 import getWeb3 from "../../../getWeb3";
 import Election from "../../../contracts/Election.json";
-import AdminOnly from "../../AdminOnly";
+import AdminOnly from "../AdminOnly";
 import "../AdminPages.css"; // <-- IMPORT THE NEW CSS
 
 export default class AddCandidate extends Component {
@@ -42,7 +42,7 @@ export default class AddCandidate extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
@@ -80,7 +80,7 @@ export default class AddCandidate extends Component {
       // Catch any errors for any of the above operations.
       console.error(error);
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
+        `Failed to load web3, accounts, or contract. Check console for details.`,
       );
     }
   };
@@ -98,7 +98,6 @@ export default class AddCandidate extends Component {
     window.location.reload();
   };
 
- 
   render() {
     if (!this.state.web3) {
       return (
@@ -145,7 +144,9 @@ export default class AddCandidate extends Component {
             <button
               className="btn-primary"
               style={{ marginTop: "1rem" }}
-              disabled={this.state.header.length < 3 || this.state.header.length > 32}
+              disabled={
+                this.state.header.length < 3 || this.state.header.length > 32
+              }
               onClick={this.addCandidate}
             >
               Add

@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 
 // Components
 import NavbarAdmin from "../Navbar/NavigationAdmin";
-import NotInit from "../NotInit";
-import "../StatusMessage.css";
+import NotInit from "../Shared/NotInit";
+import "../Shared/StatusMessage.css";
 import NavbarResults from "../Navbar/NavbarResults"; // <-- ADD THIS LINE
 
 // Contract

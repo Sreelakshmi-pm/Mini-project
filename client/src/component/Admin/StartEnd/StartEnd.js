@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import NavbarAdmin from "../../Navbar/NavigationAdmin";
-import AdminOnly from "../../AdminOnly";
+import AdminOnly from "../AdminOnly";
 import getWeb3 from "../../../getWeb3";
 import Election from "../../../contracts/Election.json";
 import "../AdminPages.css"; //
@@ -37,7 +37,7 @@ export default class StartEnd extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
@@ -61,7 +61,7 @@ export default class StartEnd extends Component {
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
+        `Failed to load web3, accounts, or contract. Check console for details.`,
       );
       console.error(error);
     }

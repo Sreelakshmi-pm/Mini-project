@@ -2,7 +2,7 @@
 
 import React, { Component } from "react";
 import NavbarAdmin from "../../Navbar/NavigationAdmin";
-import AdminOnly from "../../AdminOnly";
+import AdminOnly from "../AdminOnly";
 import getWeb3 from "../../../getWeb3";
 import Election from "../../../contracts/Election.json";
 import "../AdminPages.css";
@@ -32,7 +32,7 @@ export default class Verification extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
 
       this.setState({ web3, ElectionInstance: instance, account: accounts[0] });
@@ -60,7 +60,9 @@ export default class Verification extends Component {
       }
       this.setState({ voters: voters });
     } catch (error) {
-      alert(`Failed to load web3, accounts, or contract. Check console for details.`);
+      alert(
+        `Failed to load web3, accounts, or contract. Check console for details.`,
+      );
       console.error(error);
     }
   };
@@ -72,7 +74,7 @@ export default class Verification extends Component {
       .send({ from: this.state.account, gas: 1000000 });
     window.location.reload();
   };
-  
+
   // FIX #3: The old renderUnverifiedVoters function is now deleted
   // as all rendering logic is handled directly in the render() method.
 

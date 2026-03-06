@@ -4,7 +4,7 @@ import React, { Component } from "react";
 // Components
 import Navbar from "../Navbar/Navigation";
 import NavbarAdmin from "../Navbar/NavigationAdmin";
-import NotInit from "../NotInit";
+import NotInit from "../Shared/NotInit";
 
 // CSS
 import "./Registration.css";
@@ -56,7 +56,7 @@ export default class Registration extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
@@ -122,7 +122,7 @@ export default class Registration extends Component {
       // Catch any errors for any of the above operations.
       console.error(error);
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details (f12).`
+        `Failed to load web3, accounts, or contract. Check console for details (f12).`,
       );
     }
   };
@@ -132,7 +132,8 @@ export default class Registration extends Component {
   updateVoterPhone = (event) => {
     this.setState({ voterPhone: event.target.value });
   };
-  registerAsVoter = async () => {
+  registerAsVoter = async (event) => {
+    event.preventDefault();
     await this.state.ElectionInstance.methods
       .registerAsVoter(this.state.voterName, this.state.voterPhone)
       .send({ from: this.state.account, gas: 1000000 });
@@ -257,7 +258,7 @@ export default class Registration extends Component {
             >
               {loadCurrentVoter(
                 this.state.currentVoter,
-                this.state.currentVoter.isRegistered
+                this.state.currentVoter.isRegistered,
               )}
             </div>
           </>

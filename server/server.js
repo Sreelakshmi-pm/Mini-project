@@ -1,14 +1,13 @@
-// server.js
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 
 const app = express();
 
 // ✅ Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json({ limit: "10mb" })); // handles JSON bodies (incl. large face descriptor arrays)
+app.use(express.urlencoded({ extended: true }));
 
 // ✅ MongoDB Atlas connection
 const uri =
@@ -28,9 +27,65 @@ const voterSchema = new mongoose.Schema({
 
 const Voter = mongoose.model("Voter", voterSchema);
 
+// ✅ VoterFace schema — stores face descriptors per wallet address
+// descriptors is an array of 128-element float arrays (one per captured photo)
+const voterFaceSchema = new mongoose.Schema({
+  walletAddress: { type: String, unique: true, lowercase: true },
+  descriptors: { type: mongoose.Schema.Types.Mixed, default: [] },
+});
+const VoterFace = mongoose.model("VoterFace", voterFaceSchema);
+
 // ✅ Test route
 app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
+});
+
+// ✅ Enroll face descriptors for a voter
+app.post("/api/face/enroll", async (req, res) => {
+  const { walletAddress, descriptors } = req.body;
+  if (!walletAddress || !descriptors || descriptors.length === 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Missing walletAddress or descriptors.",
+    });
+  }
+  try {
+    await VoterFace.findOneAndUpdate(
+      { walletAddress: walletAddress.toLowerCase() },
+      { descriptors },
+      { upsert: true, new: true },
+    );
+    return res.json({
+      success: true,
+      message: "Face descriptors enrolled successfully.",
+    });
+  } catch (error) {
+    console.error("Error enrolling face:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error during enrollment." });
+  }
+});
+
+// ✅ Get stored face descriptors for a voter
+app.get("/api/face/:walletAddress", async (req, res) => {
+  try {
+    const record = await VoterFace.findOne({
+      walletAddress: req.params.walletAddress.toLowerCase(),
+    });
+    if (!record) {
+      return res.status(404).json({
+        success: false,
+        message: "No face data found for this address.",
+      });
+    }
+    return res.json({ success: true, descriptors: record.descriptors });
+  } catch (error) {
+    console.error("Error fetching face data:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error fetching face data." });
+  }
 });
 
 // ✅ Signup Route
@@ -54,12 +109,10 @@ app.post("/api/voters/signup", async (req, res) => {
     return res.json({ success: true, message: "Signup successful!" });
   } catch (error) {
     console.error("Error during signup:", error);
-    return res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error. Please try again later.",
-      });
+    return res.status(500).json({
+      success: false,
+      message: "Server error. Please try again later.",
+    });
   }
 });
 

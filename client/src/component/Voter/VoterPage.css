@@ -1,0 +1,198 @@
+/* client/src/component/VoterPage.css */
+
+.voter-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--background-light-grey);
+}
+
+.voter-page-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(17, 31, 180, 0.936); /* Using theme's navy blue */
+  color: var(--text-color-light);
+  padding: 1rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.voter-page-content {
+  /* This uses the .container-main styles from App.css */
+  max-width: 900px;
+  width: 90%;
+  margin: 2rem auto;
+  padding: 2.5rem;
+  background: var(--background-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  flex-grow: 1; /* Ensures content area grows to fill space */
+}
+
+/* Styles for the "Waiting for verification" or "Vote cast" messages */
+.status-message {
+  text-align: center;
+}
+.status-message h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.status-message p {
+  font-size: 1.1rem;
+  color: #555;
+}
+
+/* Styles for the embedded registration form */
+.registration-form {
+  max-width: 450px;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Styles for the candidate list */
+.candidate-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.candidate-item {
+  /* This uses the .info-card style from App.css */
+  background: var(--background-white);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.candidate-item h3 {
+  color: var(--accent-blue);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.candidate-item p {
+  font-style: italic;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Styles for the winner display from the Results page */
+.container-winner {
+  border: 2px solid var(--header-green);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  text-align: center;
+  background-color: #f0fff0;
+}
+
+.winner-tag {
+  background-color: var(--header-green);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.winner-votes {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+}
+.vote-count {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--header-green);
+}
+
+/* client/src/component/VoterPage.css */
+
+/* Add these new styles at the end of the file */
+
+.voter-page-nav-left,
+.voter-page-nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.logout-btn {
+  background-color: var(--primary-orange);
+  color: var(--text-color-light);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.logout-btn:hover {
+  background-color: var(--primary-orange-dark);
+}
+
+/* ── Face-capture action buttons ─────────────────────── */
+.fc-action-btn {
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 2px solid #111f82;
+  border-radius: 50px;
+  background: transparent;
+  color: #111f82;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    transform 0.15s;
+}
+.fc-action-btn:hover:not(:disabled) {
+  background: #111f82;
+  color: #fff;
+  transform: translateY(-1px);
+}
+.fc-action-btn.primary {
+  background: linear-gradient(135deg, #111f82, #3a5af9);
+  color: #fff;
+  border: none;
+  box-shadow: 0 4px 16px rgba(58, 90, 249, 0.35);
+}
+.fc-action-btn.primary:hover:not(:disabled) {
+  opacity: 0.9;
+}
+.fc-action-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.face-enrolled-msg {
+  color: #27ae60;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: center;
+}
+
+.face-verified-banner {
+  background: #eafaf1;
+  color: #1a7040;
+  border: 1px solid #27ae60;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
