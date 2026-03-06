@@ -3,7 +3,6 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 
 // Components
-import Navbar from "../Navbar/Navigation";
 import NavbarAdmin from "../Navbar/NavigationAdmin";
 import NotInit from "../NotInit";
 import "../StatusMessage.css";
@@ -48,7 +47,7 @@ export default class Result extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
@@ -84,13 +83,13 @@ export default class Result extends Component {
 
       // Admin account and verification
       const admin = await this.state.ElectionInstance.methods.getAdmin().call();
-      if (this.state.account === admin) {
+      if (this.state.account.toLowerCase() === admin.toLowerCase()) {
         this.setState({ isAdmin: true });
       }
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
-        `Failed to load web3, accounts, or contract. Check console for details.`
+        `Failed to load web3, accounts, or contract. Check console for details.`,
       );
       console.error(error);
     }

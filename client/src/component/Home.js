@@ -29,7 +29,7 @@ export default class Home extends Component {
       const deployedNetwork = Election.networks[networkId];
       const instance = new web3.eth.Contract(
         Election.abi,
-        deployedNetwork && deployedNetwork.address
+        deployedNetwork && deployedNetwork.address,
       );
 
       const account = accounts[0];
@@ -37,16 +37,15 @@ export default class Home extends Component {
 
       // Check the role and redirect
       if (account.toLowerCase() === admin.toLowerCase()) {
-        // If user is ADMIN, redirect to the Add Candidate page
-        this.props.history.push('/admin');
+        // If user is ADMIN, redirect to the Admin Dashboard
+        this.props.history.push("/admindashboard");
       } else {
         // If user is a VOTER, redirect to the Voter Page
-        this.props.history.push('/voter');
+        this.props.history.push("/voter");
       }
-
     } catch (error) {
       alert(
-        `Failed to connect to wallet. Make sure you are on the correct network.`
+        `Failed to connect to wallet. Make sure you are on the correct network.`,
       );
       console.error(error);
     }
@@ -62,7 +61,10 @@ export default class Home extends Component {
           <div style={{ textAlign: "center" }}>
             <h2>Welcome to the Election Portal</h2>
             <p>Please connect your wallet to proceed to your dashboard.</p>
-            <button onClick={this.connectWalletAndRedirect} className="btn-primary">
+            <button
+              onClick={this.connectWalletAndRedirect}
+              className="btn-primary"
+            >
               Connect Wallet
             </button>
           </div>

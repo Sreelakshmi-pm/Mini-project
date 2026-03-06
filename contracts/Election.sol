@@ -136,6 +136,8 @@ contract Election {
 
     // Request to be added as voter
     function registerAsVoter(string memory _name, string memory _phone) public {
+        require(!voterDetails[msg.sender].isRegistered, "Voter already registered");
+        require(msg.sender != admin, "Admin cannot register to vote");
         Voter memory newVoter =
             Voter({
                 voterAddress: msg.sender,
@@ -161,6 +163,7 @@ contract Election {
 
     // Vote
     function vote(uint256 candidateId) public {
+        require(msg.sender != admin, "Admin cannot vote");
         require(voterDetails[msg.sender].hasVoted == false);
         require(voterDetails[msg.sender].isVerified == true);
         require(start == true);
