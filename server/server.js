@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ MongoDB Atlas connection
 const uri =
-  "mongodb+srv://lsree117_db_user:6mQbwpP1T5JAExlE@cluster0.6ixyafu.mongodb.net/?appName=Cluster0";
+  "mongodb://lsree117_db_user:Voting12345@ac-nmjk4ts-shard-00-00.6ixyafu.mongodb.net:27017,ac-nmjk4ts-shard-00-01.6ixyafu.mongodb.net:27017,ac-nmjk4ts-shard-00-02.6ixyafu.mongodb.net:27017/?ssl=true&replicaSet=atlas-w5ukfp-shard-0&authSource=admin&appName=Cluster0";
 
 mongoose
   .connect(uri)
