@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ MongoDB Atlas connection
 const uri =
-  "mongodb://lsree117_db_user:Voting12345@ac-nmjk4ts-shard-00-00.6ixyafu.mongodb.net:27017,ac-nmjk4ts-shard-00-01.6ixyafu.mongodb.net:27017,ac-nmjk4ts-shard-00-02.6ixyafu.mongodb.net:27017/?ssl=true&replicaSet=atlas-w5ukfp-shard-0&authSource=admin&appName=Cluster0";
+  "mongodb+srv://lsree117_db_user:Voting12345@cluster0.6ixyafu.mongodb.net/votingDB?retryWrites=true&w=majority";
 
 mongoose
   .connect(uri)
@@ -40,7 +40,18 @@ app.get("/", (req, res) => {
   res.send("Backend is running successfully!");
 });
 
-// ✅ Enroll face descriptors for a voter
+// ✅ Helper function: Calculate Euclidean Distance between two 128-element arrays
+function euclideanDistance(arr1, arr2) {
+  if (arr1.length !== arr2.length) return Infinity; // Safe guard
+  let sum = 0;
+  for (let i = 0; i < arr1.length; i++) {
+    const diff = (arr1[i] || 0) - (arr2[i] || 0);
+    sum += diff * diff;
+  }
+  return Math.sqrt(sum);
+}
+
+// ✅ Enroll face descriptors for a voter (With Duplicate Prevention)
 app.post("/api/face/enroll", async (req, res) => {
   const { walletAddress, descriptors } = req.body;
   if (!walletAddress || !descriptors || descriptors.length === 0) {
@@ -49,12 +60,51 @@ app.post("/api/face/enroll", async (req, res) => {
       message: "Missing walletAddress or descriptors.",
     });
   }
+
+  const incomingWallet = walletAddress.toLowerCase();
+
   try {
+    // 1. Fetch all other registered faces
+    const otherVoters = await VoterFace.find({
+      walletAddress: { $ne: incomingWallet },
+    });
+
+    const VERIFY_THRESHOLD = 0.5;
+    let duplicateFound = false;
+
+    // 2. Compare incoming descriptors against all existing faces
+    // For each incoming scan (usually 5)
+    for (const incomingDsc of descriptors) {
+      // For each other voter
+      for (const other of otherVoters) {
+        // For each of their saved scans (usually 5)
+        for (const storedDsc of other.descriptors) {
+          const distance = euclideanDistance(incomingDsc, storedDsc);
+          if (distance < VERIFY_THRESHOLD) {
+            duplicateFound = true;
+            break;
+          }
+        }
+        if (duplicateFound) break;
+      }
+      if (duplicateFound) break;
+    }
+
+    if (duplicateFound) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This face is already registered to another wallet address. One person, one vote.",
+      });
+    }
+
+    // 3. Since no duplicate was found, save the new face
     await VoterFace.findOneAndUpdate(
-      { walletAddress: walletAddress.toLowerCase() },
+      { walletAddress: incomingWallet },
       { descriptors },
       { upsert: true, new: true },
     );
+
     return res.json({
       success: true,
       message: "Face descriptors enrolled successfully.",
@@ -85,6 +135,24 @@ app.get("/api/face/:walletAddress", async (req, res) => {
     return res
       .status(500)
       .json({ success: false, message: "Server error fetching face data." });
+  }
+});
+
+// ✅ Admin Route: Reset all registered faces
+app.delete("/api/admin/reset-faces", async (req, res) => {
+  try {
+    // Delete all records in the VoterFace collection
+    await VoterFace.deleteMany({});
+    return res.json({
+      success: true,
+      message:
+        "All face data has been permanently deleted. Voters can now register again.",
+    });
+  } catch (error) {
+    console.error("Error resetting faces:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Server error during face reset." });
   }
 });
 

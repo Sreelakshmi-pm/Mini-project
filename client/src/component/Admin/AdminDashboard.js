@@ -8,6 +8,8 @@ import getWeb3 from "../../getWeb3";
 import Election from "../../contracts/Election.json";
 import "./AdminPages.css"; // We can reuse the admin styling
 
+const SERVER = "http://localhost:5000";
+
 export default class AdminDashboard extends Component {
   constructor(props) {
     super(props);
@@ -84,6 +86,30 @@ export default class AdminDashboard extends Component {
     window.location.reload();
   };
 
+  resetFacesDatabase = async () => {
+    const confirmReset = window.confirm(
+      "WARNING: This will permanently delete ALL registered face data for this election. ONLY do this if you are starting a completely new election.\n\nAre you sure you want to proceed?",
+    );
+
+    if (confirmReset) {
+      try {
+        const response = await fetch(`${SERVER}/api/admin/reset-faces`, {
+          method: "DELETE",
+        });
+        const data = await response.json();
+
+        if (data.success) {
+          alert("✅ Success: " + data.message);
+        } else {
+          alert("❌ Error: " + data.message);
+        }
+      } catch (err) {
+        console.error("Error resetting faces:", err);
+        alert("❌ Failed to connect to server to reset faces.");
+      }
+    }
+  };
+
   render() {
     if (!this.state.web3) {
       return (
@@ -137,6 +163,33 @@ export default class AdminDashboard extends Component {
                 the contract.
               </p>
             )}
+          </div>
+
+          <hr
+            style={{ margin: "2rem 0", borderColor: "rgba(255,255,255,0.1)" }}
+          />
+
+          <div
+            className="reset-faces-container"
+            style={{ marginBottom: "2rem" }}
+          >
+            <h3>Danger Zone</h3>
+            <p style={{ color: "gray", marginBottom: "1rem" }}>
+              Only click this button when you are starting a brand new election
+              and need to clear the old face database.
+            </p>
+            <button
+              onClick={this.resetFacesDatabase}
+              className="btn-primary"
+              style={{
+                backgroundColor: "darkred",
+                border: "1px solid red",
+                padding: "10px 20px",
+                fontSize: "1rem",
+              }}
+            >
+              🗑️ Reset Faces Database
+            </button>
           </div>
 
           {/* CANDIDATE LIST SECTION */}
