@@ -23,6 +23,7 @@ function VoterLogin() {
         if (res.data.role === "admin") {
           history.push("/home"); // Redirect admin to home dashboard
         } else if (res.data.role === "voter") {
+          localStorage.setItem("voterEmail", email);
           history.push("/voter"); // Redirect voter to home dashboard
         }
       } else {

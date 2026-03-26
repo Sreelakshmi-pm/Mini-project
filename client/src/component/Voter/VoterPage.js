@@ -69,6 +69,11 @@ export default class VoterPage extends Component {
       faceVerified: false, // verified before voting
       storedDescriptors: null, // loaded from server
       verifyFailed: false, // timed out without match
+
+      // ── OTP state ──
+      sendingOTP: false,
+      showOTPModal: false,
+      otpInput: "",
     };
   }
 
@@ -128,6 +133,7 @@ export default class VoterPage extends Component {
 
   handleLogout = () => {
     localStorage.removeItem("votedFor");
+    localStorage.removeItem("voterEmail");
     alert("You have been logged out.");
     this.props.history.push("/login");
   };
@@ -197,8 +203,52 @@ export default class VoterPage extends Component {
     }
   };
 
-  onFaceVerified = () => {
-    this.setState({ faceVerified: true, storedDescriptors: null });
+  onFaceVerified = async () => {
+    this.setState({ faceVerified: true, storedDescriptors: null, sendingOTP: true });
+
+    try {
+      const email = localStorage.getItem("voterEmail");
+      if (!email) throw new Error("Voter email not found in session. Please log in again.");
+
+      const res = await fetch(`${SERVER}/api/voters/send-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+
+      this.setState({ sendingOTP: false, showOTPModal: true });
+    } catch (err) {
+      console.error(err);
+      alert("Error sending OTP: " + err.message);
+      this.setState({ sendingOTP: false, faceVerified: false });
+    }
+  };
+
+  verifyOTP = async (e) => {
+    e.preventDefault();
+    const { otpInput } = this.state;
+    const email = localStorage.getItem("voterEmail");
+    
+    try {
+      const res = await fetch(`${SERVER}/api/voters/verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp: otpInput }),
+      });
+      const data = await res.json();
+      
+      if (data.success) {
+        alert("✅ OTP Verification Successful. You may now cast your vote.");
+        this.setState({ showOTPModal: false }); // unlocks the ballot
+      } else {
+        alert("❌ " + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error verifying OTP.");
+    }
   };
 
   onVerifyFailed = () => {
@@ -405,13 +455,44 @@ export default class VoterPage extends Component {
                   </button>
                 </div>
               ) : (
-                // Verification passed — show ballot
+                // Verification passed — show OTP or ballot
                 <>
-                  <div className="face-verified-banner">
-                    ✅ Identity verified — you may now vote
-                  </div>
-                  <h2>Candidates</h2>
-                  <div className="candidate-list">
+                  {this.state.sendingOTP && (
+                    <div className="status-message">
+                      <p>Sending OTP to your registered email... Please wait.</p>
+                      <br/>
+                    </div>
+                  )}
+
+                  {this.state.showOTPModal && (
+                    <div className="status-message" style={{ marginBottom: "2rem" }}>
+                      <h2>📧 Enter OTP</h2>
+                      <p>We've sent a 6-digit verification code to your email address.</p>
+                      <form onSubmit={this.verifyOTP} style={{ marginTop: "1rem" }}>
+                        <input
+                          type="text"
+                          maxLength="6"
+                          placeholder="000000"
+                          value={this.state.otpInput}
+                          onChange={(e) => this.setState({ otpInput: e.target.value })}
+                          style={{ padding: "10px", fontSize: "1.5rem", textAlign: "center", width: "150px", letterSpacing: "5px", borderRadius: "8px", border: "1px solid #ccc", background: "#f9f9f9", color: "#333", margin: "0 auto", display: "block" }}
+                          required
+                        />
+                        <br />
+                        <button type="submit" className="fc-action-btn primary" style={{ marginTop: "1.5rem" }}>
+                          Verify OTP
+                        </button>
+                      </form>
+                    </div>
+                  )}
+
+                  {!this.state.sendingOTP && !this.state.showOTPModal && (
+                    <>
+                      <div className="face-verified-banner">
+                        ✅ Identity and Email verified — you may now vote
+                      </div>
+                      <h2>Candidates</h2>
+                      <div className="candidate-list">
                     {this.state.candidates.map((candidate) => (
                       <div className="candidate-item" key={candidate.id}>
                         <h3>{candidate.header}</h3>
@@ -426,6 +507,8 @@ export default class VoterPage extends Component {
                       </div>
                     ))}
                   </div>
+                    </>
+                  )}
                 </>
               )}
             </div>

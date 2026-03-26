@@ -1,6 +1,8 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
 
 const app = express();
 
@@ -23,6 +25,8 @@ const voterSchema = new mongoose.Schema({
   name: String,
   email: { type: String, unique: true },
   password: String,
+  otp: String,
+  otpExpires: Date,
 });
 
 const Voter = mongoose.model("Voter", voterSchema);
@@ -64,41 +68,10 @@ app.post("/api/face/enroll", async (req, res) => {
   const incomingWallet = walletAddress.toLowerCase();
 
   try {
-    // 1. Fetch all other registered faces
-    const otherVoters = await VoterFace.find({
-      walletAddress: { $ne: incomingWallet },
-    });
+    // 1. We no longer check for duplicate faces across different wallets to allow twins to register.
+    // The OTP system provides the necessary security to distinguish between users.
 
-    const VERIFY_THRESHOLD = 0.5;
-    let duplicateFound = false;
-
-    // 2. Compare incoming descriptors against all existing faces
-    // For each incoming scan (usually 5)
-    for (const incomingDsc of descriptors) {
-      // For each other voter
-      for (const other of otherVoters) {
-        // For each of their saved scans (usually 5)
-        for (const storedDsc of other.descriptors) {
-          const distance = euclideanDistance(incomingDsc, storedDsc);
-          if (distance < VERIFY_THRESHOLD) {
-            duplicateFound = true;
-            break;
-          }
-        }
-        if (duplicateFound) break;
-      }
-      if (duplicateFound) break;
-    }
-
-    if (duplicateFound) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "This face is already registered to another wallet address. One person, one vote.",
-      });
-    }
-
-    // 3. Since no duplicate was found, save the new face
+    // 2. Save the new face
     await VoterFace.findOneAndUpdate(
       { walletAddress: incomingWallet },
       { descriptors },
@@ -138,21 +111,87 @@ app.get("/api/face/:walletAddress", async (req, res) => {
   }
 });
 
-// ✅ Admin Route: Reset all registered faces
-app.delete("/api/admin/reset-faces", async (req, res) => {
+// (Admin Route Reset Faces removed - handled securely by OTP and individual wallets now)
+
+// ✅ Send OTP Route
+app.post("/api/voters/send-otp", async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ success: false, message: "Email is required." });
+
   try {
-    // Delete all records in the VoterFace collection
-    await VoterFace.deleteMany({});
-    return res.json({
-      success: true,
-      message:
-        "All face data has been permanently deleted. Voters can now register again.",
-    });
-  } catch (error) {
-    console.error("Error resetting faces:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Server error during face reset." });
+    const voter = await Voter.findOne({ email });
+    if (!voter) {
+      return res.status(404).json({ success: false, message: "Voter not found!" });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpires = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+
+    voter.otp = otp;
+    voter.otpExpires = otpExpires;
+    await voter.save();
+
+    console.log(`\n\n[DEV-MODE] 🟢 OTP for ${email}: ${otp}\n\n`);
+
+    // Setup nodemailer if configured
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: "Voting Verification - OTP Code",
+        text: `Your OTP for casting the vote is: ${otp}. It will expire in 5 minutes.`,
+      };
+
+      await transporter.sendMail(mailOptions);
+      console.log(`Email successfully sent to ${email}`);
+    } else {
+      console.log(`No email sent remotely. Using console log only for OTP.`);
+    }
+
+    return res.json({ success: true, message: "OTP sent successfully." });
+  } catch (err) {
+    console.error("Error sending OTP:", err);
+    return res.status(500).json({ success: false, message: "Server error sending OTP." });
+  }
+});
+
+// ✅ Verify OTP Route
+app.post("/api/voters/verify-otp", async (req, res) => {
+  const { email, otp } = req.body;
+  if (!email || !otp) return res.status(400).json({ success: false, message: "Email and OTP required." });
+
+  try {
+    const voter = await Voter.findOne({ email });
+    if (!voter) {
+      return res.status(404).json({ success: false, message: "Voter not found!" });
+    }
+
+    if (voter.otp !== otp) {
+      return res.status(400).json({ success: false, message: "Invalid OTP." });
+    }
+
+    if (new Date() > voter.otpExpires) {
+      return res.status(400).json({ success: false, message: "OTP has expired. Please request a new one." });
+    }
+
+    // Clear OTP upon success
+    voter.otp = undefined;
+    voter.otpExpires = undefined;
+    await voter.save();
+
+    return res.json({ success: true, message: "OTP verified correctly." });
+  } catch (err) {
+    console.error("Error verifying OTP:", err);
+    return res.status(500).json({ success: false, message: "Server error verifying OTP." });
   }
 });
 
