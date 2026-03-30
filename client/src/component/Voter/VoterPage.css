@@ -196,3 +196,7 @@
   margin-bottom: 1.5rem;
   text-align: center;
 }
+
+.headshot-summary-preview { display: flex; flex-direction: column; align-items: center; background: #f9f9f9; padding: 10px; border-radius: 8px; border: 1px dashed #ddd; }
+.face-capture-confirmed { text-align: center; margin: 15px 0; }
+
