@@ -27,6 +27,7 @@ export default class FaceCapture extends Component {
       verified: false,
       verifyFailed: false,
       captureFlash: false,
+      facePhoto: null, // Base64 headshot
     };
     this.videoRef = React.createRef();
     this.canvasRef = React.createRef();
@@ -95,8 +96,8 @@ export default class FaceCapture extends Component {
   // ─── ENROLL MODE ────────────────────────────────────────────────────────────
   capturePhoto = async () => {
     if (!this.state.cameraReady || !this.state.modelsLoaded) return;
-
     const video = this.videoRef.current;
+    if (video.readyState < 4 || video.videoWidth === 0) return;
     const detection = await faceapi
       .detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
       .withFaceLandmarks()
@@ -113,7 +114,23 @@ export default class FaceCapture extends Component {
       ...this.state.capturedDescriptors,
       Array.from(detection.descriptor),
     ];
-    this.setState({ capturedDescriptors: descriptors, captureFlash: true });
+
+    // On the last capture, grab the actual image as a headshot for admin review
+    let facePhoto = this.state.facePhoto;
+    if (descriptors.length === CAPTURE_COUNT) {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0);
+      facePhoto = canvas.toDataURL("image/jpeg", 0.7);
+    }
+
+    this.setState({
+      capturedDescriptors: descriptors,
+      facePhoto,
+      captureFlash: true,
+    });
     setTimeout(() => this.setState({ captureFlash: false }), 300);
 
     if (descriptors.length >= CAPTURE_COUNT) {
@@ -121,7 +138,7 @@ export default class FaceCapture extends Component {
         status: "✅ All 5 photos captured! Click Register to continue.",
       });
       this.stopCamera();
-      this.props.onDescriptorsReady(descriptors);
+      this.props.onDescriptorsReady(descriptors, facePhoto);
     } else {
       this.setState({
         status: `✅ Photo ${descriptors.length} captured. Now take photo ${descriptors.length + 1} from a different angle.`,
@@ -236,6 +253,13 @@ export default class FaceCapture extends Component {
             )}
             {verified && <div className="fc-big-tick">✔</div>}
             {verifyFailed && <div className="fc-big-cross">✘</div>}
+            
+            {/* ENROLL PREVIEW: Show the actual captured headshot if done */}
+            {mode === "enroll" && this.state.facePhoto && done && (
+              <div className="fc-captured-preview">
+                <img src={this.state.facePhoto} alt="Captured preview" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }} />
+              </div>
+            )}
           </div>
 
           {/* Status message */}

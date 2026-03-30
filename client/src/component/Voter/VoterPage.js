@@ -64,6 +64,8 @@ export default class VoterPage extends Component {
       showFaceCapture: false, // show the camera modal
       faceEnrolled: false, // 5 photos captured & ready
       capturedDescriptors: [], // [[Float32Array]] from face-api
+      idPhotoFile: null, // base64 string of the ID card
+      facePhoto: null, // base64 string of the headshot
 
       // ── Face-verification state (voting step) ──
       faceVerified: false, // verified before voting
@@ -139,12 +141,25 @@ export default class VoterPage extends Component {
   };
 
   // ─── Called by FaceCapture after 5 descriptors collected ─────────────────
-  onDescriptorsReady = (descriptors) => {
+  onDescriptorsReady = (descriptors, facePhoto) => {
     this.setState({
       capturedDescriptors: descriptors,
+      facePhoto: facePhoto,
       faceEnrolled: true,
       showFaceCapture: false,
     });
+  };
+
+  // ─── Handle ID photo selection (Base64 conversion) ────────────────────────
+  handleIdPhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        this.setState({ idPhotoFile: reader.result });
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // ─── Step 2: register on blockchain + send descriptors to server ──────────
@@ -155,17 +170,25 @@ export default class VoterPage extends Component {
       voterName,
       voterPhone,
       capturedDescriptors,
+      idPhotoFile,
       ElectionInstance,
     } = this.state;
 
+    if (!idPhotoFile) {
+      alert("Please upload a photo of your Government ID first.");
+      return;
+    }
+
     try {
-      // 1. Save face descriptors to backend
+      // 1. Save face descriptors, headshot & ID photo to backend
       const res = await fetch(`${SERVER}/api/face/enroll`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           walletAddress: account,
           descriptors: capturedDescriptors,
+          idPhoto: idPhotoFile,
+          facePhoto: this.state.facePhoto,
         }),
       });
       const data = await res.json();
@@ -175,6 +198,16 @@ export default class VoterPage extends Component {
       await ElectionInstance.methods
         .registerAsVoter(voterName, voterPhone)
         .send({ from: account, gas: 1000000 });
+
+      if (data.isFlagged) {
+        alert(
+          "Registration Successful!\n\nNOTE: " +
+            data.message +
+            "\n\nYour account is now pending manual admin approval.",
+        );
+      } else {
+        alert("Registration Successful! Pending admin approval.");
+      }
 
       window.location.reload();
     } catch (err) {
@@ -305,13 +338,47 @@ export default class VoterPage extends Component {
                     📷 Capture Face Photos ({capturedDescriptors.length}/5)
                   </button>
                 ) : (
-                  <p className="face-enrolled-msg">✅ Face photos captured!</p>
+                  <div className="face-capture-confirmed">
+                    <p className="face-enrolled-msg">✅ Face photos captured!</p>
+                    {this.state.facePhoto && (
+                      <div className="headshot-summary-preview" style={{ margin: "10px 0" }}>
+                        <img 
+                          src={this.state.facePhoto} 
+                          alt="Headshot Preview" 
+                          style={{ width: "80px", height: "80px", borderRadius: "50%", border: "2px solid #28a745", objectFit: "cover" }} 
+                        />
+                        <p style={{ fontSize: "0.7rem", color: "#666" }}>Your enrollment headshot</p>
+                      </div>
+                    )}
+                  </div>
                 )}
 
-                {/* Step 2: register (only after photos done) */}
+                {/* Step 2: Upload ID photo */}
+                {faceEnrolled && (
+                  <div
+                    className="id-upload-section"
+                    style={{ margin: "1rem 0" }}
+                  >
+                    <label style={{ display: "block", marginBottom: "0.5rem" }}>
+                      Upload Government ID Photo:
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={this.handleIdPhotoChange}
+                    />
+                    {this.state.idPhotoFile && (
+                      <p style={{ fontSize: "0.8rem", color: "green" }}>
+                        ✅ ID photo selected
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* Step 3: register (only after photos done) */}
                 <button
                   onClick={this.registerAsVoter}
-                  disabled={!faceEnrolled}
+                  disabled={!faceEnrolled || !this.state.idPhotoFile}
                   className="fc-action-btn primary"
                 >
                   ✔ Register

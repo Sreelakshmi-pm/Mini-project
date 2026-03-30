@@ -11,7 +11,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ✅ MongoDB Atlas connection
 const uri =
-  "mongodb+srv://lsree117_db_user:Voting12345@cluster0.6ixyafu.mongodb.net/votingDB?retryWrites=true&w=majority";
+  "mongodb+srv://lsree117_db_user:Voting123@cluster0.6ixyafu.mongodb.net/votingDB?retryWrites=true&w=majority";
 
 mongoose
   .connect(uri)
@@ -32,6 +32,9 @@ const Voter = mongoose.model("Voter", voterSchema);
 const voterFaceSchema = new mongoose.Schema({
   walletAddress: { type: String, unique: true, lowercase: true },
   descriptors: { type: mongoose.Schema.Types.Mixed, default: [] },
+  facePhoto: { type: String, default: "" }, // Raw Base64 headshot for admin comparison
+  idPhoto: { type: String, default: "" }, // Base64 encoding of the ID card
+  isFlagged: { type: Boolean, default: false }, // True if a similar face exists
 });
 const VoterFace = mongoose.model("VoterFace", voterFaceSchema);
 
@@ -51,9 +54,12 @@ function euclideanDistance(arr1, arr2) {
   return Math.sqrt(sum);
 }
 
-// ✅ Enroll face descriptors for a voter (With Duplicate Prevention)
+// ✅ Enroll face descriptors for a voter (With Flagging and Match Detection)
 app.post("/api/face/enroll", async (req, res) => {
-  const { walletAddress, descriptors } = req.body;
+  const { walletAddress, descriptors, idPhoto, facePhoto } = req.body;
+  console.log(`[DEBUG] Enrollment request from ${walletAddress}`);
+  console.log(`[DEBUG] Face Photo present: ${!!facePhoto}, ID Photo present: ${!!idPhoto}`);
+  
   if (!walletAddress || !descriptors || descriptors.length === 0) {
     return res.status(400).json({
       success: false,
@@ -71,17 +77,18 @@ app.post("/api/face/enroll", async (req, res) => {
 
     const VERIFY_THRESHOLD = 0.5;
     let duplicateFound = false;
+    let matchingWallet = null;
+    let matchingFacePhoto = null;
 
     // 2. Compare incoming descriptors against all existing faces
-    // For each incoming scan (usually 5)
     for (const incomingDsc of descriptors) {
-      // For each other voter
       for (const other of otherVoters) {
-        // For each of their saved scans (usually 5)
         for (const storedDsc of other.descriptors) {
           const distance = euclideanDistance(incomingDsc, storedDsc);
           if (distance < VERIFY_THRESHOLD) {
             duplicateFound = true;
+            matchingWallet = other.walletAddress;
+            matchingFacePhoto = other.facePhoto;
             break;
           }
         }
@@ -90,23 +97,31 @@ app.post("/api/face/enroll", async (req, res) => {
       if (duplicateFound) break;
     }
 
-    if (duplicateFound) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "This face is already registered to another wallet address. One person, one vote.",
-      });
-    }
-
-    // 3. Since no duplicate was found, save the new face
+    // 3. Save the face data, marking it as flagged if a duplicate was found
     await VoterFace.findOneAndUpdate(
       { walletAddress: incomingWallet },
-      { descriptors },
+      { 
+        descriptors, 
+        idPhoto: idPhoto || "", 
+        facePhoto: facePhoto || "",
+        isFlagged: duplicateFound 
+      },
       { upsert: true, new: true },
     );
 
+    if (duplicateFound) {
+      return res.json({
+        success: true,
+        isFlagged: true,
+        matchingWallet,
+        matchingFacePhoto,
+        message: "A similar face was detected. Your identity has been flagged for manual administrative review. Please ensure your ID photo is clear.",
+      });
+    }
+
     return res.json({
       success: true,
+      isFlagged: false,
       message: "Face descriptors enrolled successfully.",
     });
   } catch (error) {
@@ -117,11 +132,12 @@ app.post("/api/face/enroll", async (req, res) => {
   }
 });
 
-// ✅ Get stored face descriptors for a voter
+// ✅ Get stored face descriptors & ID photo for a voter
 app.get("/api/face/:walletAddress", async (req, res) => {
   try {
+    const incomingAddress = req.params.walletAddress.toLowerCase();
     const record = await VoterFace.findOne({
-      walletAddress: req.params.walletAddress.toLowerCase(),
+      walletAddress: incomingAddress,
     });
     if (!record) {
       return res.status(404).json({
@@ -129,12 +145,56 @@ app.get("/api/face/:walletAddress", async (req, res) => {
         message: "No face data found for this address.",
       });
     }
-    return res.json({ success: true, descriptors: record.descriptors });
+
+    let matchingDetails = null;
+    if (record.isFlagged) {
+      // Find the first matching record for comparison (excluding self)
+      const otherVoters = await VoterFace.find({ walletAddress: { $ne: incomingAddress } });
+      const VERIFY_THRESHOLD = 0.5;
+      
+      for (const other of otherVoters) {
+        let foundMatch = false;
+        for (const dsc of record.descriptors) {
+          for (const otherDsc of other.descriptors) {
+             if (euclideanDistance(dsc, otherDsc) < VERIFY_THRESHOLD) {
+               matchingDetails = {
+                 walletAddress: other.walletAddress,
+                 facePhoto: other.facePhoto
+               };
+               foundMatch = true;
+               break;
+             }
+          }
+          if (foundMatch) break;
+        }
+        if (foundMatch) break;
+      }
+    }
+
+    return res.json({ 
+      success: true, 
+      descriptors: record.descriptors,
+      idPhoto: record.idPhoto,
+      facePhoto: record.facePhoto,
+      isFlagged: record.isFlagged,
+      matchingDetails
+    });
   } catch (error) {
     console.error("Error fetching face data:", error);
     return res
       .status(500)
       .json({ success: false, message: "Server error fetching face data." });
+  }
+});
+
+// ✅ Delete a specific voter's face data (For rejections)
+app.delete("/api/face/delete/:walletAddress", async (req, res) => {
+  try {
+    await VoterFace.deleteOne({ walletAddress: req.params.walletAddress.toLowerCase() });
+    return res.json({ success: true, message: "Voter face data cleared." });
+  } catch (error) {
+    console.error("Error deleting face data:", error);
+    return res.status(500).json({ success: false, message: "Server error deleting voter data." });
   }
 });
 

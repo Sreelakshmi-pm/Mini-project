@@ -130,6 +130,7 @@ contract Election {
         bool isVerified;
         bool hasVoted;
         bool isRegistered;
+        bool isRejected; // New: tracks if a voter was denied
     }
     address[] public voters; // Array of address to store address of voters
     mapping(address => Voter) public voterDetails;
@@ -138,27 +139,47 @@ contract Election {
     function registerAsVoter(string memory _name, string memory _phone) public {
         require(!voterDetails[msg.sender].isRegistered, "Voter already registered");
         require(msg.sender != admin, "Admin cannot register to vote");
-        Voter memory newVoter =
-            Voter({
-                voterAddress: msg.sender,
-                name: _name,
-                phone: _phone,
-                hasVoted: false,
-                isVerified: false,
-                isRegistered: true
-            });
-        voterDetails[msg.sender] = newVoter;
-        voters.push(msg.sender);
-        voterCount += 1;
+        
+        // If they were previously rejected, we allow a fresh start
+        voterDetails[msg.sender] = Voter({
+            voterAddress: msg.sender,
+            name: _name,
+            phone: _phone,
+            hasVoted: false,
+            isVerified: false,
+            isRegistered: true,
+            isRejected: false
+        });
+        
+        // Only push if it's their FIRST registration attempt ever
+        // We use voterCount as a proxy or just check if name is empty from before
+        bool exists = false;
+        for (uint i = 0; i < voters.length; i++) {
+            if (voters[i] == msg.sender) {
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) {
+            voters.push(msg.sender);
+            voterCount += 1;
+        }
     }
 
-    // Verify voter
+    // Verify or Reject voter
     function verifyVoter(bool _verifedStatus, address voterAddress)
         public
         // Only admin can verify
         onlyAdmin
     {
         voterDetails[voterAddress].isVerified = _verifedStatus;
+        // If we set verified to false, we mark it as rejected effectively
+        if (_verifedStatus == false) {
+            voterDetails[voterAddress].isRejected = true;
+            voterDetails[voterAddress].isRegistered = false; 
+        } else {
+            voterDetails[voterAddress].isRejected = false;
+        }
     }
 
     // Vote
